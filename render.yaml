@@ -2,32 +2,12 @@ services:
   - type: web
     name: mindsync-backend
     runtime: node
-    plan: standard
+    plan: free
     rootDirectory: ./backend
     buildCommand: npm install
     startCommand: node server.js
-    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: MONGODB_URI
-        fromService:
-          name: mindsync-mongodb
-          type: pserv
-          property: connectionString
-      - key: JWT_SECRET
-        generateValue: true
-      - key: GOOGLE_VISION_API_KEY
-        sync: false
       - key: PORT
         value: 10000
-
-  - type: pserv
-    name: mindsync-mongodb
-    runtime: docker
-    plan: standard
-    repo: https://github.com/render-examples/mongodb.git
-    disk:
-      name: data
-      mountPath: /data/db
-      sizeGB: 10
