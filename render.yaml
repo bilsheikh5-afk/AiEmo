@@ -18,8 +18,3 @@ services:
         generateValue: true
       - key: GOOGLE_VISION_API_KEY
         sync: false
-
-databases:
-  - name: mindsync-mongodb
-    databaseName: mindsync
-    plan: free
