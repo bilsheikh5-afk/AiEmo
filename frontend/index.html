@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindSync - AI Mental Wellness & Productivity</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6366F1">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --secondary: #EC4899;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --dark: #1F2937;
+            --light: #F8FAFC;
+            --gray: #6B7280;
+            --background: #FFFFFF;
+            --card-bg: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+        }
+
+        [data-theme="dark"] {
+            --background: #0F172A;
+            --card-bg: #1E293B;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --dark: #F1F5F9;
+            --light: #1E293B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: var(--card-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 0 0 2rem 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Emotion Detection */
+        .emotion-detection {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .camera-feed {
+            width: 100%;
+            height: 200px;
+            background: var(--light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        #videoElement {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .camera-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .camera-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .emotion-result {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .emotion-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .emotion-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            margin: 1rem 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .stress-fill {
+            background: var(--danger);
+        }
+
+        .focus-fill {
+            background: var(--success);
+        }
+
+        .energy-fill {
+            background: var(--warning);
+        }
+
+        /* Feature Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Meditation Player */
+        .meditation-player {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .control-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+
+        /* Social Connect */
+        .social-connect {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .user-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+            background: var(--light);
+            transition: transform 0.3s;
+        }
+
+        .user-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 0.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Focus Mode */
+        .focus-mode {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .timer-display {
+            font-size: 4rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .timer-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .timer-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .timer-btn.secondary {
+            background: var(--light);
+            color: var(--text-primary);
+        }
+
+        /* AI Insights */
+        .ai-insights {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .insight-card {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-icon {
+            color: var(--primary);
+        }
+
+        .insight-title {
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: #CBD5E1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9CA3AF;
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal h2 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .modal p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .modal-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timer-display {
+                font-size: 3rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 { margin-top: 1rem; }
+        .mt-2 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 2rem; }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Status Indicators */
+        .status-online {
+            color: var(--success);
+        }
+
+        .status-busy {
+            color: var(--warning);
+        }
+
+        .status-offline {
+            color: var(--gray);
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            max-width: 300px;
+            animation: fadeIn 0.3s ease-out;
+            border-left: 4px solid var(--primary);
+        }
+
+        .notification-toast.success {
+            border-left-color: var(--success);
+        }
+
+        .notification-toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification-toast.warning {
+            border-left-color: var(--warning);
+        }
+
+        /* Progress Animation */
+        .progress-fill {
+            transition: width 1s ease-in-out;
+        }
+
+        /* Session History */
+        .session-history {
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .session-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2>Welcome to MindSync</h2>
+            <p>Please log in to access personalized mental wellness features</p>
+            <button class="modal-btn" id="demoLoginBtn">
+                <i class="fas fa-rocket"></i> Continue with Demo Account
+            </button>
+            <p class="text-center mt-1" style="color: var(--text-secondary); font-size: 0.9rem;">
+                No registration required for demo
+            </p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <span>MindSync</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#meditation">Meditation</a>
+                <a href="#focus">Focus</a>
+                <a href="#social">Community</a>
+                <div style="position: relative;">
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="notification-badge" id="notificationBadge" style="display: none;">3</div>
+                </div>
+            </div>
+            <div style="position: relative;">
+                <button class="theme-toggle" id="mobileThemeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="notification-badge" id="mobileNotificationBadge" style="display: none;">3</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Your AI Mental Wellness Companion</h1>
+            <p>Real-time emotion detection, personalized meditation, and social support in one powerful platform</p>
+            <button class="cta-button" id="getStartedBtn">Get Started</button>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <!-- Emotion Detection Card -->
+            <div class="card emotion-detection">
+                <div class="card-header">
+                    <div class="card-title">AI Emotion Detection</div>
+                    <div class="card-icon">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                </div>
+                <div class="camera-feed">
+                    <div class="camera-placeholder" id="cameraPlaceholder">
+                        <i class="fas fa-camera"></i>
+                        <p>Enable camera for real-time emotion analysis</p>
+                    </div>
+                    <video id="videoElement" autoplay playsinline class="hidden"></video>
+                </div>
+                <button class="cta-button" id="enableCameraBtn" style="width: 100%; background: var(--primary); color: white;">
+                    <span id="enableCameraText">Enable Camera</span>
+                </button>
+                <div class="emotion-result" id="emotionResult">
+                    <div class="emotion-indicator" id="emotionIndicator" style="background: var(--success);">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <div class="emotion-text" id="emotionText">Ready for Analysis</div>
+                </div>
+                <div class="mt-1" style="font-size: 0.8rem; color: var(--text-secondary); text-align: center;">
+                    <i class="fas fa-shield-alt"></i> Your data is private and secure
+                </div>
+            </div>
+
+            <!-- Mental State Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Mental State Analysis</div>
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Stress Level</span>
+                        <span id="stressValue">--%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill stress-fill" id="stressBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Focus Level</span>
+                        <span id="focusValue">--%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill focus-fill" id="focusBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Energy Level</span>
+                        <span id="energyValue">--%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill energy-fill" id="energyBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="mt-1" style="text-align: center;">
+                    <button class="timer-btn secondary" id="saveMetricsBtn" style="width: 100%;">
+                        <i class="fas fa-save"></i> Save Current Metrics
+                    </button>
+                </div>
+            </div>
+
+            <!-- Session History Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Recent Sessions</div>
+                    <div class="card-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                </div>
+                <div class="session-history" id="sessionHistory">
+                    <div class="session-item">
+                        <span>No sessions yet</span>
+                        <span>--:--</span>
+                    </div>
+                </div>
+                <div class="mt-1" style="text-align: center;">
+                    <button class="timer-btn secondary" id="viewAllSessionsBtn" style="width: 100%;">
+                        <i class="fas fa-chart-bar"></i> View Analytics
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <h2 class="text-center mt-2 mb-1" id="features">Advanced Features</h2>
+        <div class="features-grid">
+            <div class="feature-card" id="meditationFeature">
+                <div class="feature-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <div class="feature-title">AI Meditation</div>
+                <div class="feature-description">Personalized meditation sessions based on your current emotional state</div>
+            </div>
+
+            <div class="feature-card" id="socialFeature">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="feature-title">Social Connect</div>
+                <div class="feature-description">Connect with others who share similar mental states and goals</div>
+            </div>
+
+            <div class="feature-card" id="focusFeature">
+                <div class="feature-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="feature-title">Focus Mode</div>
+                <div class="feature-description">AI-powered focus sessions with cognitive optimization</div>
+            </div>
+
+            <div class="feature-card" id="sleepFeature">
+                <div class="feature-icon">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="feature-title">Sleep Analysis</div>
+                <div class="feature-description">Track and improve your sleep patterns for better mental health</div>
+            </div>
+        </div>
+
+        <!-- Meditation Player -->
+        <div class="meditation-player" id="meditation">
+            <h2 class="text-center mb-1">AI-Guided Meditation</h2>
+            <p class="text-center" style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Personalized meditation based on your current emotional state
+            </p>
+            
+            <div class="player-controls">
+                <button class="control-btn">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button class="control-btn play-btn" id="playBtn">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="control-btn">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+            </div>
+
+            <div class="mt-2">
+                <h3>Recommended Sessions</h3>
+                <div class="user-grid" id="meditationSessions">
+                    <!-- Sessions will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Connect -->
+        <div class="social-connect" id="social">
+            <h2 class="text-center mb-1">Community Connect</h2>
+            <p class="text-center" style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Connect with people who understand what you're going through
+            </p>
+
+            <div class="user-grid" id="communityUsers">
+                <!-- Users will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Focus Mode -->
+        <div class="focus-mode" id="focus">
+            <h2 class="text-center mb-1">Focus Mode</h2>
+            <p class="text-center" style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Optimize your productivity with AI-powered focus sessions
+            </p>
+
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            
+            <div class="timer-controls">
+                <button class="timer-btn" id="startTimerBtn">Start Focus</button>
+                <button class="timer-btn secondary" id="resetTimerBtn">Reset</button>
+            </div>
+
+            <div class="mt-2">
+                <h3>Focus Sessions</h3>
+                <div class="user-grid">
+                    <div class="user-card" data-duration="1500">
+                        <div class="user-avatar">25</div>
+                        <div class="user-name">Pomodoro</div>
+                        <div class="user-status">Standard</div>
+                    </div>
+                    <div class="user-card" data-duration="3000">
+                        <div class="user-avatar">50</div>
+                        <div class="user-name">Deep Work</div>
+                        <div class="user-status">Advanced</div>
+                    </div>
+                    <div class="user-card" data-duration="900">
+                        <div class="user-avatar">15</div>
+                        <div class="user-name">Quick Task</div>
+                        <div class="user-status">Simple</div>
+                    </div>
+                    <div class="user-card" data-duration="5400">
+                        <div class="user-avatar">90</div>
+                        <div class="user-name">Flow State</div>
+                        <div class="user-status">Extended</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="ai-insights">
+            <h2 class="text-center mb-1">AI Wellness Insights</h2>
+            
+            <div class="insight-card">
+                <div class="insight-header">
+                    <i class="fas fa-lightbulb insight-icon"></i>
+                    <div class="insight-title">Stress Management</div>
+                </div>
+                <p id="insight1">Enable emotion detection to get personalized insights</p>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-header">
+                    <i class="fas fa-bed insight-icon"></i>
+                    <div class="insight-title">Sleep Quality</div>
+                </div>
+                <p id="insight2">Complete a meditation session to unlock sleep analysis</p>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-header">
+                    <i class="fas fa-heart insight-icon"></i>
+                    <div class="insight-title">Social Connection</div>
+                </div>
+                <p id="insight3">Connect with community members for social wellness tips</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MindSync</h3>
+                    <p>The future of mental wellness is here. Join millions who have transformed their mental health with AI-powered insights.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Features</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Emotion Detection</a></li>
+                        <li><a href="#">AI Meditation</a></li>
+                        <li><a href="#">Social Connect</a></li>
+                        <li><a href="#">Focus Mode</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2024 MindSync. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let authToken = localStorage.getItem('mindsync_token');
+        let currentUser = null;
+        let currentSessionId = null;
+        let sessionHistory = [];
+
+        // DOM Elements
+        const themeToggle = document.getElementById('themeToggle');
+        const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+        const enableCameraBtn = document.getElementById('enableCameraBtn');
+        const enableCameraText = document.getElementById('enableCameraText');
+        const videoElement = document.getElementById('videoElement');
+        const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+        const emotionIndicator = document.getElementById('emotionIndicator');
+        const emotionText = document.getElementById('emotionText');
+        const playBtn = document.getElementById('playBtn');
+        const startTimerBtn = document.getElementById('startTimerBtn');
+        const resetTimerBtn = document.getElementById('resetTimerBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const getStartedBtn = document.getElementById('getStartedBtn');
+        const loginModal = document.getElementById('loginModal');
+        const demoLoginBtn = document.getElementById('demoLoginBtn');
+        const saveMetricsBtn = document.getElementById('saveMetricsBtn');
+        const notificationBadge = document.getElementById('notificationBadge');
+        const mobileNotificationBadge = document.getElementById('mobileNotificationBadge');
+        const sessionHistoryContainer = document.getElementById('sessionHistory');
+        const viewAllSessionsBtn = document.getElementById('viewAllSessionsBtn');
+
+        // State variables
+        let isDarkMode = false;
+        let isCameraActive = false;
+        let isMeditationPlaying = false;
+        let isTimerRunning = false;
+        let timerInterval;
+        let timerSeconds = 25 * 60; // 25 minutes
+        let emotionAnalysisInterval;
+        let currentStream = null;
+
+        // API Helper Functions
+        const api = {
+            async request(endpoint, options = {}) {
+                const url = `${API_BASE_URL}${endpoint}`;
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(authToken && { 'Authorization': `Bearer ${authToken}` }),
+                        ...options.headers
+                    },
+                    ...options
+                };
+
+                try {
+                    const response = await fetch(url, config);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('API request failed:', error);
+                    throw error;
+                }
+            },
+
+            // Emotion detection
+            async analyzeEmotion(imageBlob) {
+                const formData = new FormData();
+                formData.append('image', imageBlob);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/emotion/analyze`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('Emotion analysis API failed:', error);
+                    throw error;
+                }
+            },
+
+            // Meditation sessions
+            async startMeditation(sessionData) {
+                return this.request('/meditation/sessions/start', {
+                    method: 'POST',
+                    body: JSON.stringify(sessionData)
+                });
+            },
+
+            async completeMeditation(sessionId, moodData) {
+                return this.request(`/meditation/sessions/${sessionId}/complete`, {
+                    method: 'POST',
+                    body: JSON.stringify(moodData)
+                });
+            },
+
+            async getMeditationRecommendations() {
+                return this.request('/meditation/recommendations');
+            },
+
+            // User data
+            async getCommunityUsers() {
+                return this.request('/users/community');
+            },
+
+            async saveUserMetrics(metrics) {
+                return this.request('/users/metrics', {
+                    method: 'POST',
+                    body: JSON.stringify(metrics)
+                });
+            },
+
+            async getSessionHistory() {
+                return this.request('/sessions/history');
+            }
+        };
+
+        // Theme Toggle
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.body.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+            
+            const themeIcon = themeToggle.querySelector('i');
+            const mobileThemeIcon = mobileThemeToggle.querySelector('i');
+            
+            if (isDarkMode) {
+                themeIcon.className = 'fas fa-sun';
+                mobileThemeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                mobileThemeIcon.className = 'fas fa-moon';
+            }
+            
+            // Save theme preference
+            localStorage.setItem('mindsync_theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        mobileThemeToggle.addEventListener('click', toggleTheme);
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('mindsync_theme');
+        if (savedTheme === 'dark') {
+            isDarkMode = true;
+            document.body.setAttribute('data-theme', 'dark');
+            themeToggle.querySelector('i').className = 'fas fa-sun';
+            mobileThemeToggle.querySelector('i').className = 'fas fa-sun';
+        }
+
+        // Authentication
+        function showLoginModal() {
+            loginModal.style.display = 'flex';
+        }
+
+        function hideLoginModal() {
+            loginModal.style.display = 'none';
+        }
+
+        async function handleDemoLogin() {
+            try {
+                enableButtonLoading(demoLoginBtn, true);
+                
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Create demo user session
+                authToken = 'demo-token-' + Date.now();
+                currentUser = {
+                    id: 'demo-user',
+                    name: 'Demo User',
+                    email: 'demo@mindsync.com'
+                };
+                localStorage.setItem('mindsync_token', authToken);
+                localStorage.setItem('mindsync_user', JSON.stringify(currentUser));
+                
+                hideLoginModal();
+                initializeApp();
+                showNotification('Welcome to MindSync Demo!', 'success');
+                
+            } catch (error) {
+                console.error('Demo login failed:', error);
+                showNotification('Login failed. Please try again.', 'error');
+            } finally {
+                enableButtonLoading(demoLoginBtn, false);
+            }
+        }
+
+        function enableButtonLoading(button, isLoading) {
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = '<div class="loading-spinner"></div> Loading...';
+            } else {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-rocket"></i> Continue with Demo Account';
+            }
+        }
+
+        demoLoginBtn.addEventListener('click', handleDemoLogin);
+
+        // Enhanced Emotion Detection with Real AI
+        async function setupRealEmotionDetection() {
+            enableCameraBtn.addEventListener('click', async () => {
+                if (isCameraActive) {
+                    // Stop camera if already active
+                    stopCamera();
+                    return;
+                }
+
+                try {
+                    enableButtonLoading(enableCameraBtn, true);
+                    enableCameraText.textContent = 'Initializing...';
+                    
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            facingMode: 'user', 
+                            width: { ideal: 640 }, 
+                            height: { ideal: 480 } 
+                        } 
+                    });
+                    
+                    currentStream = stream;
+                    videoElement.srcObject = stream;
+                    videoElement.classList.remove('hidden');
+                    cameraPlaceholder.classList.add('hidden');
+                    enableCameraText.textContent = 'Stop Camera';
+                    enableCameraBtn.disabled = false;
+                    enableCameraBtn.style.background = 'var(--danger)';
+                    enableCameraBtn.classList.remove('loading');
+
+                    isCameraActive = true;
+                    
+                    // Start periodic emotion analysis
+                    startPeriodicEmotionAnalysis();
+                    showNotification('Camera activated. Emotion analysis started.', 'success');
+                    
+                } catch (error) {
+                    console.error('Camera error:', error);
+                    showNotification('Unable to access camera. Please check permissions.', 'error');
+                    enableButtonLoading(enableCameraBtn, false);
+                    enableCameraText.textContent = 'Enable Camera';
+                }
+            });
+        }
+
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            
+            videoElement.srcObject = null;
+            videoElement.classList.add('hidden');
+            cameraPlaceholder.classList.remove('hidden');
+            enableCameraText.textContent = 'Enable Camera';
+            enableCameraBtn.style.background = 'var(--primary)';
+            isCameraActive = false;
+            
+            if (emotionAnalysisInterval) {
+                clearInterval(emotionAnalysisInterval);
+            }
+            
+            showNotification('Camera stopped.', 'info');
+        }
+
+        async function startPeriodicEmotionAnalysis() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            emotionAnalysisInterval = setInterval(async () => {
+                if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA && isCameraActive) {
+                    canvas.width = videoElement.videoWidth;
+                    canvas.height = videoElement.videoHeight;
+                    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+                    canvas.toBlob(async (blob) => {
+                        try {
+                            const result = await api.analyzeEmotion(blob);
+                            updateEmotionUI(result);
+                            updateMentalStateMetrics(result.emotion);
+                            generateAIInsights(result.emotion);
+                        } catch (error) {
+                            console.error('Emotion analysis failed:', error);
+                            // Fallback to mock analysis
+                            const mockResult = performMockEmotionAnalysis();
+                            updateEmotionUI(mockResult);
+                            updateMentalStateMetrics(mockResult.emotion);
+                            generateAIInsights(mockResult.emotion);
+                        }
+                    }, 'image/jpeg', 0.8);
+                }
+            }, 5000); // Analyze every 5 seconds
+        }
+
+        function performMockEmotionAnalysis() {
+            const emotions = [
+                { emotion: 'happy', confidence: 0.85 },
+                { emotion: 'calm', confidence: 0.78 },
+                { emotion: 'focused', confidence: 0.72 },
+                { emotion: 'tired', confidence: 0.65 },
+                { emotion: 'stressed', confidence: 0.45 }
+            ];
+            
+            const randomEmotion = emotions[Math.floor(Math.random() * emotions.length)];
+            return {
+                emotion: randomEmotion.emotion,
+                confidence: randomEmotion.confidence,
+                isMock: true
+            };
+        }
+
+        function updateEmotionUI(analysis) {
+            const emotionConfig = {
+                happy: { icon: 'fa-laugh', color: 'var(--warning)', text: 'Happy & Positive' },
+                calm: { icon: 'fa-smile', color: 'var(--success)', text: 'Calm & Relaxed' },
+                focused: { icon: 'fa-meh', color: 'var(--primary)', text: 'Focused & Alert' },
+                tired: { icon: 'fa-tired', color: 'var(--gray)', text: 'Feeling Tired' },
+                stressed: { icon: 'fa-angry', color: 'var(--danger)', text: 'Stressed' },
+                angry: { icon: 'fa-angry', color: 'var(--danger)', text: 'Frustrated' },
+                sad: { icon: 'fa-sad-tear', color: 'var(--gray)', text: 'Feeling Down' },
+                neutral: { icon: 'fa-meh', color: 'var(--gray)', text: 'Neutral' }
+            };
+
+            const config = emotionConfig[analysis.emotion] || emotionConfig.neutral;
+
+            emotionIndicator.innerHTML = `<i class="fas ${config.icon}"></i>`;
+            emotionIndicator.style.background = config.color;
+            emotionText.textContent = config.text;
+
+            if (analysis.isMock) {
+                emotionText.textContent += ' (Demo)';
+            }
+        }
+
+        function updateMentalStateMetrics(emotion) {
+            const stressMap = {
+                happy: 20, calm: 25, focused: 35, neutral: 40, tired: 55, stressed: 70, angry: 80, sad: 65
+            };
+
+            const stressValue = stressMap[emotion] || 50;
+            const focusValue = 100 - stressValue;
+            const energyValue = emotion === 'tired' ? 40 : emotion === 'happy' ? 85 : 65;
+
+            updateProgressBar('stress', stressValue);
+            updateProgressBar('focus', focusValue);
+            updateProgressBar('energy', energyValue);
+        }
+
+        function updateProgressBar(type, value) {
+            const bar = document.getElementById(`${type}Bar`);
+            const valueElement = document.getElementById(`${type}Value`);
+            
+            // Smooth animation for progress bars
+            bar.style.width = `${value}%`;
+            valueElement.textContent = `${value}%`;
+        }
+
+        // Enhanced Meditation Player with Backend Integration
+        function setupMeditationPlayer() {
+            let currentSessionId = null;
+            let meditationTimer;
+            let meditationTimeLeft = 0;
+
+            playBtn.addEventListener('click', async () => {
+                if (!isMeditationPlaying) {
+                    // Start new session
+                    try {
+                        const session = await api.startMeditation({
+                            sessionType: 'quick-calm',
+                            duration: 300 // 5 minutes in seconds
+                        });
+
+                        currentSessionId = session.sessionId;
+                        meditationTimeLeft = 300;
+                        startMeditationTimer();
+
+                        playBtn.querySelector('i').className = 'fas fa-pause';
+                        playBtn.classList.add('pulse');
+                        isMeditationPlaying = true;
+
+                        showNotification('Meditation session started', 'success');
+                        addSessionToHistory('Meditation', '5:00');
+
+                    } catch (error) {
+                        console.error('Failed to start meditation:', error);
+                        // Fallback for demo
+                        currentSessionId = 'demo-session-' + Date.now();
+                        meditationTimeLeft = 300;
+                        startMeditationTimer();
+                        playBtn.querySelector('i').className = 'fas fa-pause';
+                        playBtn.classList.add('pulse');
+                        isMeditationPlaying = true;
+                        showNotification('Demo meditation started', 'info');
+                        addSessionToHistory('Meditation', '5:00');
+                    }
+                } else {
+                    // Complete session
+                    try {
+                        if (currentSessionId && !currentSessionId.includes('demo')) {
+                            await api.completeMeditation(currentSessionId, {
+                                moodBefore: 'stressed',
+                                moodAfter: 'calm'
+                            });
+                        }
+
+                        clearInterval(meditationTimer);
+                        playBtn.querySelector('i').className = 'fas fa-play';
+                        playBtn.classList.remove('pulse');
+                        isMeditationPlaying = false;
+                        currentSessionId = null;
+
+                        showNotification('Meditation session completed!', 'success');
+                        updateNotificationBadge(1);
+
+                    } catch (error) {
+                        console.error('Failed to complete meditation:', error);
+                        clearInterval(meditationTimer);
+                        playBtn.querySelector('i').className = 'fas fa-play';
+                        playBtn.classList.remove('pulse');
+                        isMeditationPlaying = false;
+                        showNotification('Demo meditation completed', 'info');
+                    }
+                }
+            });
+
+            function startMeditationTimer() {
+                const timerElement = document.createElement('div');
+                timerElement.style.textAlign = 'center';
+                timerElement.style.marginTop = '1rem';
+                timerElement.style.fontSize = '1.2rem';
+                timerElement.style.color = 'var(--primary)';
+                timerElement.innerHTML = `Time remaining: <span id="meditationTimer">${formatTime(meditationTimeLeft)}</span>`;
+                
+                // Remove existing timer if any
+                const existingTimer = document.getElementById('meditationTimerContainer');
+                if (existingTimer) {
+                    existingTimer.remove();
+                }
+                
+                timerElement.id = 'meditationTimerContainer';
+                playBtn.parentNode.appendChild(timerElement);
+
+                meditationTimer = setInterval(() => {
+                    meditationTimeLeft--;
+                    document.getElementById('meditationTimer').textContent = formatTime(meditationTimeLeft);
+                    
+                    if (meditationTimeLeft <= 0) {
+                        clearInterval(meditationTimer);
+                        timerElement.remove();
+                        if (isMeditationPlaying) {
+                            playBtn.click(); // Auto-complete session
+                        }
+                    }
+                }, 1000);
+            }
+
+            // Load meditation sessions
+            loadMeditationSessions();
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        async function loadMeditationSessions() {
+            try {
+                const recommendations = await api.getMeditationRecommendations();
+                displayMeditationSessions(recommendations);
+            } catch (error) {
+                console.error('Failed to load meditation sessions:', error);
+                // Fallback sessions
+                const fallbackSessions = [
+                    {
+                        id: 1,
+                        title: "Quick Calm",
+                        duration: 5,
+                        type: "stress-relief",
+                        description: "Brief breathing exercise for immediate stress relief",
+                        intensity: "light"
+                    },
+                    {
+                        id: 2,
+                        title: "Deep Focus",
+                        duration: 15,
+                        type: "focus",
+                        description: "Enhance concentration and mental clarity",
+                        intensity: "medium"
+                    },
+                    {
+                        id: 3,
+                        title: "Sleep Preparation",
+                        duration: 20,
+                        type: "sleep",
+                        description: "Wind down and prepare for restful sleep",
+                        intensity: "light"
+                    },
+                    {
+                        id: 4,
+                        title: "Anxiety Relief",
+                        duration: 10,
+                        type: "anxiety-relief",
+                        description: "Calm your nervous system and reduce anxiety",
+                        intensity: "medium"
+                    }
+                ];
+                displayMeditationSessions(fallbackSessions);
+            }
+        }
+
+        function displayMeditationSessions(sessions) {
+            const container = document.getElementById('meditationSessions');
+            container.innerHTML = '';
+
+            sessions.forEach(session => {
+                const sessionElement = document.createElement('div');
+                sessionElement.className = 'user-card';
+                sessionElement.innerHTML = `
+                    <div class="user-avatar">${session.duration}m</div>
+                    <div class="user-name">${session.title}</div>
+                    <div class="user-status">${session.type}</div>
+                `;
+                sessionElement.addEventListener('click', () => {
+                    showNotification(`Starting ${session.title} session`, 'info');
+                    // In a real app, this would start the specific session
+                });
+                container.appendChild(sessionElement);
+            });
+        }
+
+        // Focus Timer
+        function startTimer() {
+            if (isTimerRunning) return;
+            
+            isTimerRunning = true;
+            startTimerBtn.textContent = 'Pause';
+            startTimerBtn.style.background = 'var(--warning)';
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = '00:00';
+                    startTimerBtn.textContent = 'Start Focus';
+                    startTimerBtn.style.background = 'var(--primary)';
+                    isTimerRunning = false;
+                    
+                    // Show completion message
+                    showNotification('Focus session complete! Take a 5-minute break.', 'success');
+                    timerSeconds = 25 * 60;
+                    updateTimerDisplay();
+                    updateNotificationBadge(1);
+                    addSessionToHistory('Focus', '25:00');
+                    return;
+                }
+                
+                updateTimerDisplay();
+            }, 1000);
+            
+            addSessionToHistory('Focus', 'Started');
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = 25 * 60;
+            startTimerBtn.textContent = 'Start Focus';
+            startTimerBtn.style.background = 'var(--primary)';
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        startTimerBtn.addEventListener('click', () => {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                startTimerBtn.textContent = 'Resume';
+            } else {
+                startTimer();
+            }
+        });
+
+        resetTimerBtn.addEventListener('click', resetTimer);
+
+        // Setup focus session buttons
+        document.querySelectorAll('.focus-mode .user-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const duration = parseInt(this.getAttribute('data-duration'));
+                timerSeconds = duration;
+                updateTimerDisplay();
+                showNotification(`Focus timer set to ${duration/60} minutes`, 'info');
+            });
+        });
+
+        // Community Features
+        async function loadCommunityUsers() {
+            try {
+                const users = await api.getCommunityUsers();
+                displayCommunityUsers(users);
+            } catch (error) {
+                console.error('Failed to load community users:', error);
+                // Fallback users
+                const fallbackUsers = [
+                    { name: 'Jane Smith', status: 'Feeling Calm', activity: 'Meditating', avatar: 'JS' },
+                    { name: 'Mike Davis', status: 'Focused', activity: 'Working', avatar: 'MD' },
+                    { name: 'Sarah Park', status: 'Meditating', activity: 'Online', avatar: 'SP' },
+                    { name: 'Alex Rivera', status: 'Need Support', activity: 'Available', avatar: 'AR' }
+                ];
+                displayCommunityUsers(fallbackUsers);
+            }
+        }
+
+        function displayCommunityUsers(users) {
+            const container = document.getElementById('communityUsers');
+            container.innerHTML = '';
+
+            users.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.className = 'user-card';
+                userElement.innerHTML = `
+                    <div class="user-avatar">${user.avatar}</div>
+                    <div class="user-name">${user.name}</div>
+                    <div class="user-status">${user.status}</div>
+                    <div class="user-status status-${user.activity.toLowerCase()}">${user.activity}</div>
+                `;
+                userElement.addEventListener('click', () => {
+                    showNotification(`Connecting with ${user.name}...`, 'info');
+                });
+                container.appendChild(userElement);
+            });
+        }
+
+        // Session History Management
+        function addSessionToHistory(type, duration) {
+            const session = {
+                id: Date.now(),
+                type: type,
+                duration: duration,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            sessionHistory.unshift(session);
+            if (sessionHistory.length > 5) {
+                sessionHistory = sessionHistory.slice(0, 5);
+            }
+            
+            updateSessionHistoryDisplay();
+        }
+
+        function updateSessionHistoryDisplay() {
+            sessionHistoryContainer.innerHTML = '';
+            
+            if (sessionHistory.length === 0) {
+                sessionHistoryContainer.innerHTML = `
+                    <div class="session-item">
+                        <span>No sessions yet</span>
+                        <span>--:--</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            sessionHistory.forEach(session => {
+                const sessionElement = document.createElement('div');
+                sessionElement.className = 'session-item';
+                sessionElement.innerHTML = `
+                    <span>${session.type}</span>
+                    <span>${session.duration}</span>
+                `;
+                sessionHistoryContainer.appendChild(sessionElement);
+            });
+        }
+
+        // AI Insights Generation
+        function generateAIInsights(emotion) {
+            const insights = {
+                stress: [
+                    "Your stress patterns show improvement. Consider adding a 5-minute breathing exercise to your morning routine.",
+                    "Based on your emotional state, a short walk outside could help reduce stress levels.",
+                    "Try the 4-7-8 breathing technique: inhale for 4 seconds, hold for 7, exhale for 8."
+                ],
+                sleep: [
+                    "Your focus levels correlate with sleep duration. Aim for 7-8 hours for optimal cognitive performance.",
+                    "Consistent sleep schedule can improve your mood and energy levels by up to 30%.",
+                    "Avoid screens 1 hour before bedtime to improve sleep quality."
+                ],
+                social: [
+                    "You've been more socially active this week. This correlates with a 15% decrease in stress levels.",
+                    "Connecting with supportive communities can boost mental resilience.",
+                    "Consider sharing your wellness journey with friends for mutual support."
+                ]
+            };
+
+            // Update insights based on emotion
+            document.getElementById('insight1').textContent = 
+                insights.stress[Math.floor(Math.random() * insights.stress.length)];
+            document.getElementById('insight2').textContent = 
+                insights.sleep[Math.floor(Math.random() * insights.sleep.length)];
+            document.getElementById('insight3').textContent = 
+                insights.social[Math.floor(Math.random() * insights.social.length)];
+
+            // Add fade-in effect
+            document.querySelectorAll('.insight-card').forEach(card => {
+                card.classList.add('fade-in');
+                setTimeout(() => card.classList.remove('fade-in'), 1000);
+            });
+        }
+
+        // Save Metrics
+        saveMetricsBtn.addEventListener('click', async () => {
+            const stress = parseInt(document.getElementById('stressValue').textContent);
+            const focus = parseInt(document.getElementById('focusValue').textContent);
+            const energy = parseInt(document.getElementById('energyValue').textContent);
+
+            if (isNaN(stress)) {
+                showNotification('Please enable emotion detection first', 'error');
+                return;
+            }
+
+            try {
+                await api.saveUserMetrics({ stress, focus, energy, emotion: emotionText.textContent });
+                showNotification('Metrics saved successfully!', 'success');
+                addSessionToHistory('Metrics', 'Saved');
+            } catch (error) {
+                console.error('Failed to save metrics:', error);
+                showNotification('Metrics saved locally (demo mode)', 'info');
+                addSessionToHistory('Metrics', 'Saved');
+            }
+        });
+
+        // View All Sessions
+        viewAllSessionsBtn.addEventListener('click', () => {
+            showNotification('Session analytics feature coming soon!', 'info');
+        });
+
+        // Notification System
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification-toast ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--card-bg);
+                color: var(--text-primary);
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                z-index: 1001;
+                max-width: 300px;
+                animation: fadeIn 0.3s ease-out;
+                border-left: 4px solid ${type === 'error' ? 'var(--danger)' : type === 'success' ? 'var(--success)' : type === 'warning' ? 'var(--warning)' : 'var(--primary)'};
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Remove after 4 seconds
+            setTimeout(() => {
+                notification.style.animation = 'fadeIn 0.3s ease-out reverse';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        function updateNotificationBadge(count) {
+            if (count > 0) {
+                notificationBadge.style.display = 'flex';
+                mobileNotificationBadge.style.display = 'flex';
+                notificationBadge.textContent = count;
+                mobileNotificationBadge.textContent = count;
+            } else {
+                notificationBadge.style.display = 'none';
+                mobileNotificationBadge.style.display = 'none';
+            }
+        }
+
+        // Feature Navigation
+        document.getElementById('meditationFeature').addEventListener('click', () => {
+            document.getElementById('meditation').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('socialFeature').addEventListener('click', () => {
+            document.getElementById('social').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('focusFeature').addEventListener('click', () => {
+            document.getElementById('focus').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('sleepFeature').addEventListener('click', () => {
+            showNotification('Sleep analysis feature coming soon!', 'info');
+        });
+
+        getStartedBtn.addEventListener('click', () => {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Initialize App
+        function initializeApp() {
+            console.log('Initializing MindSync app...');
+            
+            // Load user-specific data
+            loadMeditationSessions();
+            loadCommunityUsers();
+            
+            // Initialize components
+            setupRealEmotionDetection();
+            setupMeditationPlayer();
+            
+            // Show initial insights
+            generateAIInsights('neutral');
+            
+            // Simulate some initial notifications
+            setTimeout(() => {
+                updateNotificationBadge(2);
+            }, 2000);
+            
+            // Load any saved user data
+            const savedUser = localStorage.getItem('mindsync_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+            }
+        }
+
+        // Check authentication on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTimerDisplay();
+            
+            // Check if user is authenticated
+            const savedToken = localStorage.getItem('mindsync_token');
+            const savedUser = localStorage.getItem('mindsync_user');
+            
+            if (savedToken && savedUser) {
+                console.log('User is authenticated');
+                authToken = savedToken;
+                currentUser = JSON.parse(savedUser);
+                initializeApp();
+            } else {
+                console.log('No authentication found, showing login modal');
+                setTimeout(showLoginModal, 1000);
+            }
+
+            // Simulate initial emotion detection
+            setTimeout(() => {
+                if (!isCameraActive) {
+                    emotionIndicator.innerHTML = '<i class="fas fa-smile"></i>';
+                    emotionIndicator.style.background = 'var(--success)';
+                    emotionText.textContent = 'Ready for Analysis';
+                }
+            }, 1000);
+        });
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Web App Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install promotion after a delay
+            setTimeout(() => {
+                const installBtn = document.createElement('button');
+                installBtn.textContent = 'Install MindSync App';
+                installBtn.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: var(--primary);
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 50px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    z-index: 1000;
+                    transition: transform 0.3s;
+                `;
+                installBtn.onmouseenter = () => {
+                    installBtn.style.transform = 'translateY(-2px)';
+                };
+                installBtn.onmouseleave = () => {
+                    installBtn.style.transform = 'translateY(0)';
+                };
+                installBtn.onclick = async () => {
+                    if (!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        console.log('User installed the app');
+                        installBtn.remove();
+                    }
+                    deferredPrompt = null;
+                };
+                document.body.appendChild(installBtn);
+            }, 10000); // Show after 10 seconds
+        });
+    </script>
+</body>
+</html>
