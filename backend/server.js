@@ -18,12 +18,16 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// MongoDB connection
+// MongoDB connection with robust error handling
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mindsync';
+
+console.log('🔗 Connecting to MongoDB...');
 
 mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
 })
 .then(() => {
     console.log('✅ MongoDB connected successfully');
@@ -31,7 +35,16 @@ mongoose.connect(MONGODB_URI, {
 })
 .catch(err => {
     console.error('❌ MongoDB connection error:', err.message);
-    process.exit(1);
+    console.log('💡 Running in limited mode without database');
+});
+
+// MongoDB connection events
+mongoose.connection.on('error', err => {
+    console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.log('MongoDB disconnected');
 });
 
 // Routes
@@ -40,7 +53,7 @@ app.use('/api/emotion', emotionRoutes);
 app.use('/api/meditation', meditationRoutes);
 app.use('/api/users', userRoutes);
 
-// Health check endpoint
+// Health check endpoint (REQUIRED for Render)
 app.get('/health', (req, res) => {
     const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
     
@@ -49,7 +62,8 @@ app.get('/health', (req, res) => {
         message: 'MindSync Backend is running',
         timestamp: new Date().toISOString(),
         database: dbStatus,
-        environment: process.env.NODE_ENV || 'development'
+        environment: process.env.NODE_ENV || 'development',
+        version: '1.0.0'
     });
 });
 
@@ -59,6 +73,7 @@ app.get('/', (req, res) => {
         message: 'MindSync API Server', 
         version: '1.0.0',
         status: 'running',
+        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
         endpoints: {
             auth: '/api/auth',
             emotion: '/api/emotion', 
@@ -120,4 +135,5 @@ httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 Health check: http://localhost:${PORT}/health`);
     console.log(`🎯 API ready: http://localhost:${PORT}/api`);
+    console.log(`🗄️  MongoDB: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
 });
