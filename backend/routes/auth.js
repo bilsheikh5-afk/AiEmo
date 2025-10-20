@@ -9,18 +9,10 @@ router.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Validation
         if (!name || !email || !password) {
             return res.status(400).json({
                 error: 'Name, email, and password are required',
                 code: 'MISSING_FIELDS'
-            });
-        }
-
-        if (password.length < 6) {
-            return res.status(400).json({
-                error: 'Password must be at least 6 characters',
-                code: 'PASSWORD_TOO_SHORT'
             });
         }
 
@@ -45,7 +37,7 @@ router.post('/register', async (req, res) => {
         // Generate token
         const token = jwt.sign(
             { id: user._id },
-            process.env.JWT_SECRET,
+            process.env.JWT_SECRET || 'fallback-secret',
             { expiresIn: '7d' }
         );
 
@@ -75,7 +67,6 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validation
         if (!email || !password) {
             return res.status(400).json({
                 error: 'Email and password are required',
@@ -108,7 +99,7 @@ router.post('/login', async (req, res) => {
         // Generate token
         const token = jwt.sign(
             { id: user._id },
-            process.env.JWT_SECRET,
+            process.env.JWT_SECRET || 'fallback-secret',
             { expiresIn: '7d' }
         );
 
@@ -130,29 +121,6 @@ router.post('/login', async (req, res) => {
             error: 'Login failed',
             code: 'LOGIN_ERROR',
             message: error.message
-        });
-    }
-});
-
-// Get current user
-router.get('/me', async (req, res) => {
-    try {
-        // This requires auth middleware to be added later
-        const user = await User.findById(req.user.id);
-        res.json({
-            success: true,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                profile: user.profile,
-                stats: user.stats
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            error: 'Failed to fetch user',
-            code: 'USER_FETCH_ERROR'
         });
     }
 });
