@@ -1,47 +1,20 @@
-import mongoose from 'mongoose';
+import express from 'express';
+const router = express.Router();
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
-  profile: {
-    bio: String,
-    goals: [String],
-    preferences: {
-      meditationStyle: String,
-      notificationEnabled: Boolean
-    }
-  },
-  stats: {
-    totalMeditationMinutes: { type: Number, default: 0 },
-    completedSessions: { type: Number, default: 0 },
-    currentStreak: { type: Number, default: 0 },
-    longestStreak: { type: Number, default: 0 }
-  },
-  friends: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }],
-  status: {
-    current: { type: String, default: 'online' },
-    lastActive: { type: Date, default: Date.now },
-    currentActivity: String
-  }
-}, {
-  timestamps: true
+// Mock user routes for now
+router.get('/community', (req, res) => {
+    const mockUsers = [
+        { name: 'Jane Smith', status: 'Feeling Calm', activity: 'Meditating', avatar: 'JS' },
+        { name: 'Mike Davis', status: 'Focused', activity: 'Working', avatar: 'MD' },
+        { name: 'Sarah Park', status: 'Meditating', activity: 'Online', avatar: 'SP' },
+        { name: 'Alex Rivera', status: 'Need Support', activity: 'Available', avatar: 'AR' }
+    ];
+    res.json(mockUsers);
 });
 
-export default mongoose.model('User', userSchema);
+router.post('/metrics', (req, res) => {
+    // Mock save metrics
+    res.json({ success: true, message: 'Metrics saved (demo)' });
+});
+
+export default router;
