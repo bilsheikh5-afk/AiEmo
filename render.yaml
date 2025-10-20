@@ -3,10 +3,23 @@ services:
     name: mindsync-backend
     runtime: node
     plan: free
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && node server.js
+    rootDirectory: ./backend
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GOOGLE_VISION_API_KEY
+        sync: false
+
+databases:
+  - name: mindsync-mongodb
+    databaseName: mindsync
+    plan: free
