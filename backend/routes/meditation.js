@@ -5,41 +5,33 @@ import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Get personalized meditation recommendations
+// Get meditation recommendations
 router.get('/recommendations', auth, async (req, res) => {
     try {
-        // Get user's recent emotions for personalization
-        const recentEmotions = await Emotion.find({ userId: req.user.id })
-            .sort({ createdAt: -1 })
-            .limit(5);
-
-        const baseSessions = [
+        const recommendations = [
             {
                 id: 1,
                 title: "Quick Calm",
                 duration: 300,
-                type: "stress-relief",
+                type: "quick-calm",
                 description: "Brief breathing exercise for immediate stress relief",
-                intensity: "light",
-                recommendedFor: ["stressed", "angry", "tired"]
+                intensity: "light"
             },
             {
                 id: 2,
                 title: "Deep Focus",
                 duration: 900,
-                type: "focus",
+                type: "deep-focus",
                 description: "Enhance concentration and mental clarity",
-                intensity: "medium",
-                recommendedFor: ["focused", "neutral"]
+                intensity: "medium"
             },
             {
                 id: 3,
                 title: "Sleep Preparation",
                 duration: 1200,
-                type: "sleep",
+                type: "sleep-preparation",
                 description: "Wind down and prepare for restful sleep",
-                intensity: "light",
-                recommendedFor: ["tired", "calm"]
+                intensity: "light"
             },
             {
                 id: 4,
@@ -47,38 +39,13 @@ router.get('/recommendations', auth, async (req, res) => {
                 duration: 600,
                 type: "anxiety-relief",
                 description: "Calm your nervous system and reduce anxiety",
-                intensity: "medium",
-                recommendedFor: ["stressed", "angry", "sad"]
-            },
-            {
-                id: 5,
-                title: "Energy Boost",
-                duration: 480,
-                type: "energy",
-                description: "Gentle awakening for mental and physical energy",
-                intensity: "light",
-                recommendedFor: ["tired", "neutral"]
+                intensity: "medium"
             }
         ];
 
-        // Personalize based on recent emotional state
-        let personalizedSessions = [...baseSessions];
-        
-        if (recentEmotions.length > 0) {
-            const dominantEmotion = recentEmotions[0].emotion;
-            
-            // Move recommended sessions to the top
-            personalizedSessions.sort((a, b) => {
-                const aMatch = a.recommendedFor.includes(dominantEmotion);
-                const bMatch = b.recommendedFor.includes(dominantEmotion);
-                return bMatch - aMatch;
-            });
-        }
-
         res.json({
             success: true,
-            sessions: personalizedSessions,
-            personalization: recentEmotions.length > 0 ? 'personalized' : 'default'
+            sessions: recommendations
         });
 
     } catch (error) {
@@ -93,14 +60,15 @@ router.get('/recommendations', auth, async (req, res) => {
 // Start meditation session
 router.post('/sessions/start', auth, async (req, res) => {
     try {
-        const { sessionType, duration } = req.body;
+        const { sessionType, duration, title, moodBefore } = req.body;
 
         const session = new Meditation({
             userId: req.user.id,
             sessionType,
             duration,
+            title,
             startTime: new Date(),
-            moodBefore: req.body.moodBefore || 'neutral'
+            moodBefore: moodBefore || 'neutral'
         });
 
         await session.save();
@@ -135,12 +103,7 @@ router.post('/sessions/:id/complete', auth, async (req, res) => {
             });
         }
 
-        session.endTime = new Date();
-        session.completed = true;
-        session.moodAfter = req.body.moodAfter;
-        session.notes = req.body.notes;
-
-        await session.save();
+        await session.markCompleted(req.body.moodAfter, req.body.notes);
 
         // Update user stats
         const minutes = Math.round(session.duration / 60);
@@ -159,8 +122,7 @@ router.post('/sessions/:id/complete', auth, async (req, res) => {
             session: {
                 id: session._id,
                 duration: session.duration,
-                completed: session.completed,
-                moodImprovement: session.moodAfter !== session.moodBefore ? 'improved' : 'same'
+                completed: session.completed
             }
         });
 
@@ -180,12 +142,7 @@ router.get('/sessions/history', auth, async (req, res) => {
             .sort({ startTime: -1 })
             .limit(20);
 
-        const stats = {
-            totalSessions: sessions.length,
-            totalMinutes: sessions.reduce((sum, session) => sum + Math.round(session.duration / 60), 0),
-            averageDuration: sessions.length > 0 ? 
-                Math.round(sessions.reduce((sum, session) => sum + session.duration, 0) / sessions.length / 60) : 0
-        };
+        const stats = await Meditation.getUserStats(req.user.id);
 
         res.json({
             success: true,
